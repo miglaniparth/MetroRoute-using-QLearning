@@ -1,33 +1,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <graphics.h>
 #define RAN_LIM 500000
 
-double qMatrix[11][11], rMatrix[11][11], gammaLR = 0.8;
+double qMatrix[11][11], rMatrix[11][11], gammaLR = 0.8; // defining all the required 1D and 2D arrays. Also gammaLR is learning rate
 int max_index[11], available_acts[11];
 int ran_top = 0, ran[RAN_LIM];
 
-void printArray(double a[][11])
-{
-    int i, j;
 
-    printf("\nMatrix: \n");
-    for (i = 0; i < 11; i++)
-    {
-        for (j = 0; j < 11; j++)
-        {
-            printf("%f\t", (a[i][j]));
-        }
-        printf("\n");
-    }
-}
 
-int returnRandom()
+int returnRandom()   // returning random value as we know the more randomization we do,the more trained Q-matrix we will get
 {
+    return ran[ran_top++];
     return ran[ran_top++];
 }
 
-double update(int current_state, int action, double rMatrix[][11],double qMatrix[][11])
+double update(int current_state, int action, double rMatrix[][11],double qMatrix[][11]) /* Here action is the value returned from sample next action function*/
 {
     int i = 0, j = 0, k = 0, index_of_max;
     double temp_max = 0.0, max_value = 0.0, sumA = 0.0;
@@ -59,7 +48,7 @@ double update(int current_state, int action, double rMatrix[][11],double qMatrix
 
 
     //Main updation
-    qMatrix[current_state][action] = rMatrix[current_state][action] + (gammaLR * max_value);
+    qMatrix[current_state][action] = rMatrix[current_state][action] + (gammaLR * max_value); // bellman equation
     temp_max = 0.0;
     for (i = 0; i < 11; i++)
     {
@@ -93,7 +82,10 @@ double update(int current_state, int action, double rMatrix[][11],double qMatrix
     }
 }
 
-int available_actions(int state, int available_acts[],double rMatrix[][11])
+int available_actions(int state, int available_acts[],double rMatrix[][11])  //this function will return all the possible column values whose
+                                                                            //R-Matrix value is greater than 0, for that specific row. State will
+                                                                            // represent the current state and we will store all the column values
+                                                                            //for these possible values in this available acts array
 {
     int k = 0, j = 0;
     while (j < 11)
@@ -105,12 +97,14 @@ int available_actions(int state, int available_acts[],double rMatrix[][11])
         }
         j++;
     }
-    printf("\n");
+
     return k;
 }
 
 
 int sample_next_action(int size,int available_acts[])
+/*This function will simply select a random index out of the previously returned array. Here
+size is the value of k returned from the available_actions function*/
 {
     int a = returnRandom();
     int next_action = available_acts[a % size];
@@ -119,17 +113,17 @@ int sample_next_action(int size,int available_acts[])
 
 int main()
 {
-    int i, j;
+    int i, j,counter=0;
     char station[11][20]={
     "New Delhi",
     "Rajiv Chowk",
     "Mandi House",
     "Janpath",
     "Patel Chowk",
-    "C.S.",
-    "L.K.M",
+    "Central Secretariat",
+    "Lok Kalyan Marg",
     "IMA",
-    "S.E.",
+    "South Extension",
     "Lajpat Nagar",
     "Khan Market"
     };
@@ -234,7 +228,6 @@ int main()
                             rMatrix[i][j] = 100.0;
                         }
                         break;
-
             }
 
 
@@ -242,18 +235,7 @@ int main()
     }
 
 
-    printf("\nPoints Matrix : \n");
-    for (i = 0; i < 11; i++)
-    {
-        for (j = 0; j < 11; j++)
-        {
-            printf("%f\t",rMatrix[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n\n\n");
 
-    printf("%f", rMatrix[10][10]);
 
 
     // Training the Q Matrix
@@ -268,7 +250,6 @@ int main()
         score = update(current_state, action,rMatrix,qMatrix);
         scores[i] = score;
 
-        printf("\nScore : %f", score);
     }
 
 
@@ -285,26 +266,32 @@ int main()
     }
 
 
-    printf("\n\nTrained Q Matrix: \n");
-    for (i = 0; i < 11; i++)
-    {
-        for (j = 0; j < 11; j++)
-        {
-            printf("%f\t", (qMatrix[i][j] / final_max * 100.0));
-        }
-        printf("\n");
-    }
-
 
     int curr_state=initial_state;
     int visited[11]={0,0,0,0,0,0,0,0,0,0,0};
     int no_way=0;
     int row_max=0,max_ind=0;
 
+    int gd = DETECT, gm;
+
+
+	initgraph(&gd, &gm, "C:/TURBOC3/BGI");
+    int big=initwindow(getmaxwidth(),getmaxheight());
+    setcurrentwindow(big);
+
+    int c_x=100,c_y=100;
+    int c1_x=100,c1_y=100;
+    int l_x1=200,l_y1=100,l_x2=300,l_y2=100;
+    int p_x1=300,p_y1=75,p_x2=350,p_y2=100,p_x3=300,p_y3=125;
+    int points[8];
+    int txt_x=52,txt_y=95;
+
     printf("Path: \n");
     while (visited[final_state]!=1)
     {
+
         printf("%s-> ",station[curr_state]);
+        counter++;
         row_max=0;
         max_ind=0;
 
@@ -320,8 +307,38 @@ int main()
             }
         }
 
+        circle(c_x,c_y,70);
+        circle(c1_x,c1_y,60);
+        line(l_x1,l_y1,l_x2,l_y2);
+
+        points[0]=p_x1;
+        points[1]=p_y1;
+        points[2]=p_x2;
+        points[3]=p_y2;
+        points[4]=p_x3;
+        points[5]=p_y3;
+        points[6]=p_x1;
+        points[7]=p_y1;
+
+        fillpoly(4,points);
+        outtextxy(txt_x,txt_y,station[curr_state]);
+
+        i++;
+
+        c_x+=350;
+        c1_x+=350;
+        l_x1+=350;
+        l_x2+=350;
+        p_x1+=350;
+        p_x2+=350;
+        p_x3+=350;
+        txt_x+=350;
+
         curr_state=max_ind;
         visited[max_ind]=1;
+
+
+
         if(row_max==0)
         {
             no_way=1;
@@ -332,7 +349,12 @@ int main()
         {
             break;
         }
+
     }
+
+    circle(c_x,c_y,70);
+    circle(c1_x,c1_y,60);
+    outtextxy(txt_x,txt_y,station[curr_state]);
 
     if(no_way==1)
     {
@@ -340,7 +362,10 @@ int main()
     }
     else
     {
-        printf("%s is the shortest path\n",station[curr_state]);
+        printf("%s is the shortest path\nYou will travel through %d stations and will take approximately %d minutes for your %dKm journey ",station[curr_state],counter,counter*5,counter*4);
+
     }
+    int x;
+    scanf("%d",&x);
 
 }
