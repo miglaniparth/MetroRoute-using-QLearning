@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <graphics.h>
@@ -276,15 +275,15 @@ int main()
 
 
 	initgraph(&gd, &gm, "C:/TURBOC3/BGI");
-    int big=initwindow(getmaxwidth(),getmaxheight());
+    int big=initwindow(getmaxwidth(),getmaxheight(),"Optimal Path Graph");
     setcurrentwindow(big);
 
-    int c_x=100,c_y=100;
-    int c1_x=100,c1_y=100;
-    int l_x1=200,l_y1=100,l_x2=300,l_y2=100;
-    int p_x1=300,p_y1=75,p_x2=350,p_y2=100,p_x3=300,p_y3=125;
+    int c_x=100,c_y=400;
+    int c1_x=100,c1_y=400;
+    int l_x1=190,l_y1=400,l_x2=250,l_y2=400;
+    int p_x1=250,p_y1=390,p_x2=267,p_y2=400,p_x3=250,p_y3=410;
     int points[8];
-    int txt_x=52,txt_y=95;
+    int txt_x=40,txt_y=394;
 
     printf("Path: \n");
     while (visited[final_state]!=1)
@@ -307,8 +306,8 @@ int main()
             }
         }
 
-        circle(c_x,c_y,70);
-        circle(c1_x,c1_y,60);
+        circle(c_x,c_y,80);
+        circle(c1_x,c1_y,70);
         line(l_x1,l_y1,l_x2,l_y2);
 
         points[0]=p_x1;
@@ -325,14 +324,14 @@ int main()
 
         i++;
 
-        c_x+=350;
-        c1_x+=350;
-        l_x1+=350;
-        l_x2+=350;
-        p_x1+=350;
-        p_x2+=350;
-        p_x3+=350;
-        txt_x+=350;
+        c_x+=267;
+        c1_x+=267;
+        l_x1+=267;
+        l_x2+=267;
+        p_x1+=267;
+        p_x2+=267;
+        p_x3+=267;
+        txt_x+=267;
 
         curr_state=max_ind;
         visited[max_ind]=1;
@@ -352,8 +351,8 @@ int main()
 
     }
 
-    circle(c_x,c_y,70);
-    circle(c1_x,c1_y,60);
+    circle(c_x,c_y,80);
+    circle(c1_x,c1_y,70);
     outtextxy(txt_x,txt_y,station[curr_state]);
 
     if(no_way==1)
